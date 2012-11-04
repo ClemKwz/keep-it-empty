@@ -7,12 +7,19 @@
 #include "hge.h"
 
 HGE* hge = 0;
+Game* pGame = NULL;
 
 Game::Game(void)
 {
+	pGame = this;
+
 	// Game resolution
 	m_nScreenSizeX = 900;
 	m_nScreenSizeY = 500;
+
+	m_nCurrentLevel = 0;
+	m_ppLevels = new Level*[10];
+	m_ppLevels[0] = new Level(this, 20);
 }
 
 Game::~Game(void)
@@ -27,13 +34,25 @@ bool FrameFunc()
 
 bool RenderFunc()
 {
+	hge->Gfx_BeginScene();
+	hge->Gfx_Clear(0);
+	pGame->Draw();
+	hge->Gfx_EndScene();
+	
 	return false;
+}
+
+void Game::Draw()
+{
+	m_ppLevels[m_nCurrentLevel]->Draw();
 }
 
 void Game::Start()
 {
 	// Initialization
 	hge = hgeCreate(HGE_VERSION);
+	m_pHGE = hge;
+	hge->System_SetState(HGE_LOGFILE, "keep-it-empty.log");
 	hge->System_SetState(HGE_SHOWSPLASH, false);
 	hge->System_SetState(HGE_RENDERFUNC, RenderFunc);   
 	hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
