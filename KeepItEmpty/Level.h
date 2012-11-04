@@ -3,35 +3,26 @@
 //                        Copyright(c) 2012 by Clément Kawczak                          //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GAME_H
-#define GAME_H
+#ifndef LEVEL_H
+#define LEVEL_H
 #pragma once
 
-#include "Level.h"
-#include "hge.h"
 
-class Game
+#include "Element.h"
+
+class Game;
+
+class Level
 {
-
 public:
-	Game(void);
-	HGE* GetHGE(){return m_pHGE;}
-	void Start();
-	int GetScreenSizeX(){return m_nScreenSizeX;}
-	int GetScreenSizeY(){return m_nScreenSizeY;}
+	Level(Game* game, int nElements);
 	void Draw();
-	~Game(void);
+	~Level(void);
 
 private:
-	HGE* m_pHGE;
-
-	int m_nScreenSizeX;
-	int m_nScreenSizeY;
-
-	Level** m_ppLevels;
-	int m_nCurrentLevel;
-
+	Game* m_pGame;
+	Element** m_ppElements;
+	int m_nElements;
 };
 
 #endif
-

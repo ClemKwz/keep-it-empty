@@ -3,34 +3,25 @@
 //                        Copyright(c) 2012 by Clément Kawczak                          //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GAME_H
-#define GAME_H
+#ifndef ELEMENT_H
+#define ELEMENT_H
 #pragma once
 
-#include "Level.h"
-#include "hge.h"
+typedef unsigned long DWORD;
+class Game;
 
-class Game
+class Element
 {
-
 public:
-	Game(void);
-	HGE* GetHGE(){return m_pHGE;}
-	void Start();
-	int GetScreenSizeX(){return m_nScreenSizeX;}
-	int GetScreenSizeY(){return m_nScreenSizeY;}
+	Element(Game* pGame, int nPosX, int nPosY);
+	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);
 	void Draw();
-	~Game(void);
+	~Element(void);
 
 private:
-	HGE* m_pHGE;
-
-	int m_nScreenSizeX;
-	int m_nScreenSizeY;
-
-	Level** m_ppLevels;
-	int m_nCurrentLevel;
-
+	Game* m_pGame;
+	int m_nPosX;
+	int m_nPosY;
 };
 
 #endif
