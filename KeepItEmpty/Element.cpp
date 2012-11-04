@@ -7,11 +7,33 @@
 #include <math.h>
 #include "Game.h"
 
-Element::Element(Game* pGame, int nPosX, int nPosY)
+Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 {
 	m_pGame = pGame;
-	m_nPosX = nPosX;
-	m_nPosY = nPosY;
+	m_fPosX = (float)nPosX;
+	m_fPosY = (float)nPosY;
+	m_nRadius = nRadius;
+	m_fSpeed = fSpeed;
+
+	m_fUpdateX = ((float)(rand()%100))/100;
+	m_fUpdateY = ((float)(rand()%100))/100;
+	int randX = rand();
+	int randY = rand();
+	if(randX == 0)
+		m_fUpdateX = -m_fUpdateX;
+	if(randY == 0)
+		m_fUpdateY = -m_fUpdateY;
+}
+
+void Element::Update()
+{
+	m_fPosX += m_fUpdateX * m_fSpeed;
+	m_fPosY += m_fUpdateY * m_fSpeed;
+	if((m_fPosX <= 0 + m_nRadius/2) || (m_fPosX >= 900 - m_nRadius/2))
+		m_fUpdateX = -m_fUpdateX;
+	if((m_fPosY <= 0 + m_nRadius/2) || (m_fPosY >= 500 - m_nRadius/2))
+		m_fUpdateY = -m_fUpdateY;
+
 }
 
 void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
@@ -40,7 +62,7 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 
 void Element::Draw()
 {
-	Draw_Circle(m_nPosX, m_nPosY, 15, 30, 0xFFFFFFFF);
+	Draw_Circle((int)m_fPosX, (int)m_fPosY, m_nRadius, 30, 0xFFFFFFFF);
 }
 
 Element::~Element(void)
