@@ -13,15 +13,20 @@ class Game;
 class Element
 {
 public:
-	Element(Game* pGame, int nPosX, int nPosY);
+	Element(Game* pGame, int nPosX, int nPosY, int nRadius, float nSpeed);
+	void Update();
 	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);
 	void Draw();
 	~Element(void);
 
 private:
 	Game* m_pGame;
-	int m_nPosX;
-	int m_nPosY;
+	float m_fPosX;
+	float m_fPosY;
+	int m_nRadius;
+	float m_fSpeed;
+	float m_fUpdateX;
+	float m_fUpdateY;
 };
 
 #endif

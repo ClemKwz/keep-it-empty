@@ -16,6 +16,7 @@ class Level
 {
 public:
 	Level(Game* game, int nElements);
+	void Update();
 	void Draw();
 	~Level(void);
 

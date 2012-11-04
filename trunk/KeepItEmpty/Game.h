@@ -19,6 +19,7 @@ public:
 	void Start();
 	int GetScreenSizeX(){return m_nScreenSizeX;}
 	int GetScreenSizeY(){return m_nScreenSizeY;}
+	void Update();
 	void Draw();
 	~Game(void);
 

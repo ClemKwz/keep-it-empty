@@ -29,7 +29,13 @@ Game::~Game(void)
 bool FrameFunc()
 {
   if (hge->Input_GetKeyState(HGEK_ESCAPE)) return true;
+  pGame->Update();
   return false;
+}
+
+void Game::Update()
+{
+	m_ppLevels[m_nCurrentLevel]->Update();
 }
 
 bool RenderFunc()
