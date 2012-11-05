@@ -36,5 +36,8 @@ private:
 	float m_fPosY;
 
 	int m_nRadius;
+
+	// timing the death
+	float m_fTime;
 };
 

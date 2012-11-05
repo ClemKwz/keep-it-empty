@@ -6,6 +6,7 @@
 #include "Level.h"
 #include "Game.h"
 #include "Player.h"
+#include "Conf.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,8 +28,6 @@ Level::Level(Game* game, int nElement)
 		int nRadius = 10;
 		// Radius aléatoire
 		//int nRadius = rand()%(15 - 10) + 10; 
-		
-		float fSpeed = 0.3;
 
 		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY, nRadius, fSpeed);
 	}
@@ -44,28 +43,35 @@ void Level::Update()
 	for(int i = 0;i < m_nElements;i++)
 	{
 		m_ppElements[i]->Update();
-
-		if(m_pGame->GetPlayer()->GetState() == Explode)
+		if(m_ppElements[i]->GetState() == Ready)
 		{
-			float x1 = m_ppElements[i]->GetPosX();
-			float y1 = m_ppElements[i]->GetPosY();
-			float x2 = m_pGame->GetPlayer()->GetPosX();
-			float y2 = m_pGame->GetPlayer()->GetPosY();
-			float fDistance = sqrt(Square(x2 - x1) + Square(y2 - y1));
-			if(fDistance <= m_pGame->GetPlayer()->GetRadius() + m_ppElements[i]->GetRadius())
+			if(m_pGame->GetPlayer()->GetState() == Explode)
 			{
-				m_ppElements[i]->SetExploded();
-			}
-			for(int j = 0;j < m_nElements;j++)
-			{
-				if(i != j && m_ppElements[j]->GetState() == Explode)
+				float x1 = m_ppElements[i]->GetPosX();
+				float y1 = m_ppElements[i]->GetPosY();
+				float x2 = m_pGame->GetPlayer()->GetPosX();
+				float y2 = m_pGame->GetPlayer()->GetPosY();
+				float fDistance = sqrt(Square(x2 - x1) + Square(y2 - y1));
+				if(fDistance <= m_pGame->GetPlayer()->GetRadius() + m_ppElements[i]->GetRadius())
 				{
-					x2 = m_ppElements[j]->GetPosX();
-					y2 = m_ppElements[j]->GetPosY();
-					fDistance = sqrt(Square(x2 - x1) + Square(y2 - y1));
-					if(fDistance <= m_pGame->GetPlayer()->GetRadius() + m_ppElements[i]->GetRadius())
+					m_ppElements[i]->SetExploded();
+				}
+			}
+			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dead)
+			{
+				float x1 = m_ppElements[i]->GetPosX();
+				float y1 = m_ppElements[i]->GetPosY();
+				for(int j = 0;j < m_nElements;j++)
+				{
+					if(i != j && m_ppElements[j]->GetState() == Explode)
 					{
-						m_ppElements[i]->SetExploded();
+						float x2 = m_ppElements[j]->GetPosX();
+						float y2 = m_ppElements[j]->GetPosY();
+						float fDistance = sqrt(Square(x2 - x1) + Square(y2 - y1));
+						if(fDistance <= m_ppElements[i]->GetRadius() + m_ppElements[j]->GetRadius())
+						{
+							m_ppElements[i]->SetExploded();
+						}
 					}
 				}
 			}
