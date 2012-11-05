@@ -15,6 +15,12 @@ class Game;
 class Level
 {
 public:
+	enum State {
+      Ready,
+      Explode,
+      Dead
+   };
+
 	Level(Game* game, int nElements);
 	void Update();
 	void Draw();
