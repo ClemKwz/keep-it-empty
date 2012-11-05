@@ -45,6 +45,9 @@ private:
 
 	float m_fUpdateX;
 	float m_fUpdateY;
+
+	// timing the death
+	float m_fTime;
 };
 
 #endif

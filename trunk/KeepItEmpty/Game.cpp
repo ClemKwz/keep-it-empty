@@ -74,6 +74,9 @@ void Game::Start()
 	hge->System_SetState(HGE_TITLE, "Keep It Empty !");
 	hge->System_SetState(HGE_HIDEMOUSE, false);
 
+	// Set FPS
+	hge->System_SetState(HGE_FPS, 30);
+
 	if(hge->System_Initiate())
 	{
 		hge->System_Start();

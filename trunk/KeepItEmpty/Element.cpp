@@ -6,6 +6,7 @@
 #include "Element.h"
 #include <math.h>
 #include "Game.h"
+#include "Conf.h"
 
 Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 {
@@ -15,6 +16,7 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 	m_nRadius = nRadius;
 	m_fSpeed = fSpeed;
 	m_eState = Ready;
+	m_fTime = 0.0;
 
 	m_fUpdateX = ((float)(rand()%100))/100;
 	m_fUpdateY = ((float)(rand()%100))/100;
@@ -29,7 +31,7 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 void Element::SetExploded()
 {
 	m_eState = Explode;
-	m_nRadius = 30;
+	m_nRadius = 50;
 }
 
 void Element::Update()
@@ -43,7 +45,15 @@ void Element::Update()
 		if((m_fPosY <= 0 + m_nRadius/2) || (m_fPosY >= 500 - m_nRadius/2))
 			m_fUpdateY = -m_fUpdateY;
 	}
+	else if(m_eState == Explode)
+	{
+		float dt = m_pGame->GetHGE()->Timer_GetDelta();
+		m_fTime += dt;
 
+		// 3 seconds until death
+		if(m_fTime > fDeathTimeElement)
+			m_eState = Dead;
+	}
 }
 
 void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
@@ -72,7 +82,8 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 
 void Element::Draw()
 {
-	Draw_Circle((int)m_fPosX, (int)m_fPosY, m_nRadius, 30, 0xFFFFFFFF);
+	if(m_eState != Dead)
+		Draw_Circle((int)m_fPosX, (int)m_fPosY, m_nRadius, 30, 0xFFFFFFFF);
 }
 
 Element::~Element(void)

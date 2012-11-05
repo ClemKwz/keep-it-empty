@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Game.h"
 #include <math.h>
+#include "Conf.h"
 
 Player::Player(Game* pGame)
 {
@@ -14,6 +15,7 @@ Player::Player(Game* pGame)
 	m_fPosX = 0.0;
 	m_fPosY = 0.0;
 	m_nRadius = 30;
+	m_fTime = 0.0;
 }
 
 void Player::Update()
@@ -25,6 +27,15 @@ void Player::Update()
 			m_eState = Explode;
 			m_pGame->GetHGE()->Input_GetMousePos(&m_fPosX, &m_fPosY);
 		}
+	}
+	else if(m_eState == Explode)
+	{
+		float dt = m_pGame->GetHGE()->Timer_GetDelta();
+		m_fTime += dt;
+
+		// 3 seconds until death
+		if(m_fTime > fDeathTimePlayer)
+			m_eState = Dead;
 	}
 }
 
