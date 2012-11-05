@@ -3,15 +3,13 @@
 //                        Copyright(c) 2012 by Clément Kawczak                          //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ELEMENT_H
-#define ELEMENT_H
 #pragma once
 
 typedef unsigned long DWORD;
 
 class Game;
 
-class Element
+class Player
 {
 public:
 	enum State {
@@ -20,32 +18,23 @@ public:
       Dead
    };
 
-	Element(Game* pGame, int nPosX, int nPosY, int nRadius, float nSpeed);
+	Player(Game* pGame);
 	State GetState(){return m_eState;}
 	float GetPosX(){return m_fPosX;}
 	float GetPosY(){return m_fPosY;}
 	int GetRadius(){return m_nRadius;}
-	void SetExploded();
 	void Update();
 	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);
 	void Draw();
-	~Element(void);
+	~Player(void);
 
 private:
 	Game* m_pGame;
-
 	State m_eState;
 
 	float m_fPosX;
 	float m_fPosY;
 
 	int m_nRadius;
-
-	float m_fSpeed;
-
-	float m_fUpdateX;
-	float m_fUpdateY;
 };
-
-#endif
 

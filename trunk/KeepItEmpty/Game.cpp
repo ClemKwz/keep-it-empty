@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Game.h"
+#include "Player.h"
 #include "hge.h"
 
 HGE* hge = 0;
@@ -13,13 +14,15 @@ Game::Game(void)
 {
 	pGame = this;
 
+	m_pPlayer = new Player(pGame);
+
 	// Game resolution
 	m_nScreenSizeX = 900;
 	m_nScreenSizeY = 500;
 
 	m_nCurrentLevel = 0;
 	m_ppLevels = new Level*[10];
-	m_ppLevels[0] = new Level(this, 20);
+	m_ppLevels[0] = new Level(pGame, 30);
 }
 
 Game::~Game(void)
@@ -36,6 +39,7 @@ bool FrameFunc()
 void Game::Update()
 {
 	m_ppLevels[m_nCurrentLevel]->Update();
+	m_pPlayer->Update();
 }
 
 bool RenderFunc()
@@ -51,6 +55,7 @@ bool RenderFunc()
 void Game::Draw()
 {
 	m_ppLevels[m_nCurrentLevel]->Draw();
+	m_pPlayer->Draw();
 }
 
 void Game::Start()
@@ -67,6 +72,7 @@ void Game::Start()
 	hge->System_SetState(HGE_SCREENWIDTH, m_nScreenSizeX);
     hge->System_SetState(HGE_SCREENHEIGHT, m_nScreenSizeY);
 	hge->System_SetState(HGE_TITLE, "Keep It Empty !");
+	hge->System_SetState(HGE_HIDEMOUSE, false);
 
 	if(hge->System_Initiate())
 	{

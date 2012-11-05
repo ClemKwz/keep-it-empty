@@ -14,6 +14,7 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 	m_fPosY = (float)nPosY;
 	m_nRadius = nRadius;
 	m_fSpeed = fSpeed;
+	m_eState = Ready;
 
 	m_fUpdateX = ((float)(rand()%100))/100;
 	m_fUpdateY = ((float)(rand()%100))/100;
@@ -25,14 +26,23 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 		m_fUpdateY = -m_fUpdateY;
 }
 
+void Element::SetExploded()
+{
+	m_eState = Explode;
+	m_nRadius = 30;
+}
+
 void Element::Update()
 {
-	m_fPosX += m_fUpdateX * m_fSpeed;
-	m_fPosY += m_fUpdateY * m_fSpeed;
-	if((m_fPosX <= 0 + m_nRadius/2) || (m_fPosX >= 900 - m_nRadius/2))
-		m_fUpdateX = -m_fUpdateX;
-	if((m_fPosY <= 0 + m_nRadius/2) || (m_fPosY >= 500 - m_nRadius/2))
-		m_fUpdateY = -m_fUpdateY;
+	if(m_eState == Ready)
+	{
+		m_fPosX += m_fUpdateX * m_fSpeed;
+		m_fPosY += m_fUpdateY * m_fSpeed;
+		if((m_fPosX <= 0 + m_nRadius/2) || (m_fPosX >= 900 - m_nRadius/2))
+			m_fUpdateX = -m_fUpdateX;
+		if((m_fPosY <= 0 + m_nRadius/2) || (m_fPosY >= 500 - m_nRadius/2))
+			m_fUpdateY = -m_fUpdateY;
+	}
 
 }
 

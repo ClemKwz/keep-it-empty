@@ -10,6 +10,8 @@
 #include "Level.h"
 #include "hge.h"
 
+class Player;
+
 class Game
 {
 
@@ -19,12 +21,15 @@ public:
 	void Start();
 	int GetScreenSizeX(){return m_nScreenSizeX;}
 	int GetScreenSizeY(){return m_nScreenSizeY;}
+	Player* GetPlayer(){return m_pPlayer;}
 	void Update();
 	void Draw();
 	~Game(void);
 
 private:
 	HGE* m_pHGE;
+
+	Player* m_pPlayer;
 
 	int m_nScreenSizeX;
 	int m_nScreenSizeY;
