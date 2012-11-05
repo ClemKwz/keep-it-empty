@@ -31,7 +31,8 @@ Game::~Game(void)
 
 bool FrameFunc()
 {
-  if (hge->Input_GetKeyState(HGEK_ESCAPE)) return true;
+  if(hge->Input_GetKeyState(HGEK_ESCAPE))
+	  return true;
   pGame->Update();
   return false;
 }
@@ -40,6 +41,11 @@ void Game::Update()
 {
 	m_ppLevels[m_nCurrentLevel]->Update();
 	m_pPlayer->Update();
+	if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+	{
+		m_ppLevels[m_nCurrentLevel]->Restart();
+		m_pPlayer->Restart();
+	}
 }
 
 bool RenderFunc()

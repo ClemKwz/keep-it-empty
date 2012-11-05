@@ -24,6 +24,7 @@ public:
 	float GetPosY(){return m_fPosY;}
 	int GetRadius(){return m_nRadius;}
 	void Update();
+	void Restart();
 	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);
 	void Draw();
 	~Player(void);
