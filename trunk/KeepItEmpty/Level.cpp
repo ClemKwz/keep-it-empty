@@ -38,6 +38,20 @@ float Square(float x)
 	return x*x;
 }
 
+void Level::Restart()
+{
+	for(int i = 0;i < m_nElements;i++)
+	{
+		delete m_ppElements[i];
+		int nSizeX = m_pGame->GetScreenSizeX();
+		int nSizeY = m_pGame->GetScreenSizeY();
+		int nElementPosX = rand()%(nSizeX - 100) + 50;
+		int nElementPosY = rand()%(nSizeY - 100) + 50;
+		int nRadius = 10;
+		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY, nRadius, fSpeed);
+	}
+}
+
 void Level::Update()
 {
 	for(int i = 0;i < m_nElements;i++)

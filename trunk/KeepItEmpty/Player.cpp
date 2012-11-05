@@ -39,6 +39,12 @@ void Player::Update()
 	}
 }
 
+void Player::Restart()
+{
+	m_eState = Ready;
+	m_fTime = 0.0;
+}
+
 void Player::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
 {
 	float EachAngle;
@@ -70,7 +76,6 @@ void Player::Draw()
 		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 30, 0xFFFFFFFF);
 	}
 }
-
 
 Player::~Player(void)
 {

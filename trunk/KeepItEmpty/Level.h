@@ -23,6 +23,7 @@ public:
 
 	Level(Game* game, int nElements);
 	void Update();
+	void Restart();
 	void Draw();
 	~Level(void);
 
