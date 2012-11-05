@@ -4,6 +4,6 @@
 
 const float fDeathTimePlayer = 3.0;
 const float fDeathTimeElement = 3.0;
-const float fSpeed = 7.0;
+const float fSpeed = 5.0;
 
 #endif

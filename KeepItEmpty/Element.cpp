@@ -7,6 +7,10 @@
 #include <math.h>
 #include "Game.h"
 #include "Conf.h"
+#include "hge.h"
+#include <iostream>
+
+using namespace std;
 
 Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 {
@@ -18,13 +22,36 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 	m_eState = Ready;
 	m_fTime = 0.0;
 
-	m_fUpdateX = ((float)(rand()%100))/100;
-	m_fUpdateY = ((float)(rand()%100))/100;
-	int randX = rand();
-	int randY = rand();
-	if(randX == 0)
+	InitUpdateDirection();
+}
+
+void Element::InitUpdateDirection()
+{
+	// 12 values of trigonometric circle
+	int random = rand()%3;
+	switch(random)
+	{
+	case 0:
+		m_fUpdateX = (float)((sqrt(3.0))/2);
+		m_fUpdateY = 0.5;
+		break;
+	case 1:
+		m_fUpdateX = (float)((sqrt(2.0))/2);
+		m_fUpdateY = m_fUpdateX;
+		break;
+	case 2:
+		m_fUpdateX = 0.5;
+		m_fUpdateY = (float)((sqrt(3.0))/2);
+		break;
+	default :
+		m_fUpdateX = 0.0;
+		m_fUpdateY = 1.0;
+	}
+	random = rand()%2;
+	if(random == 1)
 		m_fUpdateX = -m_fUpdateX;
-	if(randY == 0)
+	random = rand()%2;
+	if(random == 1)
 		m_fUpdateY = -m_fUpdateY;
 }
 
@@ -40,9 +67,9 @@ void Element::Update()
 	{
 		m_fPosX += m_fUpdateX * m_fSpeed;
 		m_fPosY += m_fUpdateY * m_fSpeed;
-		if((m_fPosX <= 0 + m_nRadius/2) || (m_fPosX >= 900 - m_nRadius/2))
+		if((m_fPosX <= 0 + m_nRadius/2) || (m_fPosX >= m_pGame->GetScreenSizeX() - m_nRadius/2))
 			m_fUpdateX = -m_fUpdateX;
-		if((m_fPosY <= 0 + m_nRadius/2) || (m_fPosY >= 500 - m_nRadius/2))
+		if((m_fPosY <= 0 + m_nRadius/2) || (m_fPosY >= m_pGame->GetScreenSizeY() - m_nRadius/2))
 			m_fUpdateY = -m_fUpdateY;
 	}
 	else if(m_eState == Explode)
@@ -65,7 +92,7 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 	float y1;
 	float y2;
  
-	EachAngle = 2.0 * M_PI / (float)Segments;
+	EachAngle = (float)(2.0 * M_PI) / (float)Segments;
  
 	x2 = Radius;
 	y2 = 0.0;
@@ -83,7 +110,7 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 void Element::Draw()
 {
 	if(m_eState != Dead)
-		Draw_Circle((int)m_fPosX, (int)m_fPosY, m_nRadius, 30, 0xFFFFFFFF);
+		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 30, 0xFFFFFFFF);
 }
 
 Element::~Element(void)
