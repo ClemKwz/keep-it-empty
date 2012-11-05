@@ -25,6 +25,7 @@ public:
 	float GetPosX(){return m_fPosX;}
 	float GetPosY(){return m_fPosY;}
 	int GetRadius(){return m_nRadius;}
+	void InitUpdateDirection();
 	void SetExploded();
 	void Update();
 	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);

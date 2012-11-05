@@ -14,7 +14,7 @@ Player::Player(Game* pGame)
 	m_eState = Ready;
 	m_fPosX = 0.0;
 	m_fPosY = 0.0;
-	m_nRadius = 30;
+	m_nRadius = 50;
 	m_fTime = 0.0;
 }
 
@@ -48,7 +48,7 @@ void Player::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD c
 	float y1;
 	float y2;
  
-	EachAngle = 2.0 * M_PI / (float)Segments;
+	EachAngle = (float)(2.0 * M_PI) / (float)Segments;
  
 	x2 = Radius;
 	y2 = 0.0;
@@ -67,7 +67,7 @@ void Player::Draw()
 {
 	if(m_eState == Explode)
 	{
-		Draw_Circle((int)m_fPosX, (int)m_fPosY, 50, m_nRadius, 0xFFFFFFFF);
+		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 30, 0xFFFFFFFF);
 	}
 }
 
