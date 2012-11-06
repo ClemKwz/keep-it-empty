@@ -36,6 +36,11 @@ private:
 	float m_fPosX;
 	float m_fPosY;
 
+	float m_fReadyPosX;
+	float m_fReadyPosY;
+
+	DWORD m_dwColor;
+
 	int m_nRadius;
 
 	// timing the death

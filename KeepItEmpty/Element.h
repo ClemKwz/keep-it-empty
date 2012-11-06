@@ -26,6 +26,7 @@ public:
 	float GetPosY(){return m_fPosY;}
 	int GetRadius(){return m_nRadius;}
 	void InitUpdateDirection();
+	void InitType();
 	void SetExploded();
 	void Update();
 	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);
@@ -46,6 +47,9 @@ private:
 
 	float m_fUpdateX;
 	float m_fUpdateY;
+
+	DWORD m_dwColor;
+	int m_nType;
 
 	// timing the death
 	float m_fTime;

@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "hge.h"
+#include "hgefont.h"
 
 HGE* hge = 0;
 Game* pGame = NULL;
@@ -60,8 +61,8 @@ bool RenderFunc()
 
 void Game::Draw()
 {
-	m_ppLevels[m_nCurrentLevel]->Draw();
 	m_pPlayer->Draw();
+	m_ppLevels[m_nCurrentLevel]->Draw();
 }
 
 void Game::Start()

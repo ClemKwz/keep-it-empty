@@ -25,7 +25,7 @@ Level::Level(Game* game, int nElement)
 		int nElementPosY = rand()%(nSizeY - 100) + 50;
 		
 		// Radius fixe
-		int nRadius = 10;
+		int nRadius = 7;
 		// Radius aléatoire
 		//int nRadius = rand()%(15 - 10) + 10; 
 
@@ -40,11 +40,11 @@ float Square(float x)
 
 void Level::Restart()
 {
+	int nSizeX = m_pGame->GetScreenSizeX();
+	int nSizeY = m_pGame->GetScreenSizeY();
 	for(int i = 0;i < m_nElements;i++)
 	{
 		delete m_ppElements[i];
-		int nSizeX = m_pGame->GetScreenSizeX();
-		int nSizeY = m_pGame->GetScreenSizeY();
 		int nElementPosX = rand()%(nSizeX - 100) + 50;
 		int nElementPosY = rand()%(nSizeY - 100) + 50;
 		int nRadius = 10;
