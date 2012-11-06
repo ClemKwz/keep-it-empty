@@ -23,6 +23,41 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 	m_fTime = 0.0;
 
 	InitUpdateDirection();
+	InitType();
+}
+
+void Element::InitType()
+{
+	m_nType = rand()%8;
+	switch(m_nType)
+	{
+	case 0:
+		m_dwColor = 0x7FFF6600;
+		break;
+	case 1:
+		m_dwColor = 0x7F23DAFF; 
+		break;
+	case 2:
+		m_dwColor = 0x7F33FF33;
+		break;
+	case 3:
+		m_dwColor = 0x7FFF0202;
+		break;
+	case 4:
+		m_dwColor = 0x7FFF23B2;
+		break;
+	case 5:
+		m_dwColor = 0x7F1C0CFF;
+		break;
+	case 6:
+		m_dwColor = 0x7FE3FF14;
+		break;
+	case 7:
+		m_dwColor = 0x7F7C77FF;
+		break;
+	default :
+		m_dwColor = 0x7FAFFF87;
+	}
 }
 
 void Element::InitUpdateDirection()
@@ -58,7 +93,7 @@ void Element::InitUpdateDirection()
 void Element::SetExploded()
 {
 	m_eState = Explode;
-	m_nRadius = 50;
+	//m_nRadius = 50;
 }
 
 void Element::Update()
@@ -74,6 +109,8 @@ void Element::Update()
 	}
 	else if(m_eState == Explode)
 	{
+		if(m_nRadius < 50)
+			m_nRadius += 2;
 		float dt = m_pGame->GetHGE()->Timer_GetDelta();
 		m_fTime += dt;
 
@@ -81,6 +118,11 @@ void Element::Update()
 		if(m_fTime > fDeathTimeElement)
 			m_eState = Dead;
 	}
+}
+
+float Square2(float x)
+{
+	return x*x;
 }
 
 void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
@@ -97,7 +139,7 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 	x2 = Radius;
 	y2 = 0.0;
  
-	for(a=0.0; a<= (2.0*M_PI + EachAngle); a+=EachAngle)
+	for(a = 0.0;a <= (2.0*M_PI + EachAngle);a += EachAngle)
 	{
 		x1 = x2;
 		y1 = y2;
@@ -105,12 +147,31 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 		y2 = Radius * sin(a);
 		m_pGame->GetHGE()->Gfx_RenderLine(x1+cx, y1+cy, x2+cx, y2+cy, color);
 	}
+
+	// Fill element
+	for(int i = m_fPosX - m_nRadius;i <=  m_fPosX;i++)
+	{
+		for(int j = m_fPosY - m_nRadius;j <=  m_fPosY;j++)
+		{
+			float fDistance = sqrt(Square2(m_fPosX - i) + Square2(m_fPosY - j));
+			if(fDistance <= m_nRadius + 1)
+			{
+				int tmpi = m_fPosX - i;
+				int tmpy = m_fPosY - j;
+
+				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX - tmpi, m_fPosY - tmpy, m_fPosX - tmpi+1, m_fPosY - tmpy + 1, color);
+				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX - tmpi, m_fPosY + tmpy, m_fPosX - tmpi+1, m_fPosY + tmpy + 1, color);
+				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX + tmpi, m_fPosY - tmpy, m_fPosX + tmpi+1, m_fPosY - tmpy + 1, color);
+				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX + tmpi, m_fPosY + tmpy, m_fPosX + tmpi+1, m_fPosY + tmpy + 1, color);
+			}
+		}
+	}
 }
 
 void Element::Draw()
 {
 	if(m_eState != Dead)
-		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 30, 0xFFFFFFFF);
+		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 50, m_dwColor);
 }
 
 Element::~Element(void)
