@@ -7,6 +7,7 @@
 #include "Game.h"
 #include <math.h>
 #include "Conf.h"
+#include "Fonctions.h"
 
 Player::Player(Game* pGame)
 {
@@ -35,12 +36,20 @@ void Player::Update()
 	{
 		if(m_nRadius < 50)
 			m_nRadius += 2;
+		else
+		{
+			float dt = m_pGame->GetHGE()->Timer_GetDelta();
+			m_fTime += dt;
 
-		float dt = m_pGame->GetHGE()->Timer_GetDelta();
-		m_fTime += dt;
-
-		// 3 seconds until death
-		if(m_fTime > fDeathTimePlayer)
+			if(m_fTime > m_pGame->fDeathTimePlayer)
+				m_eState = Dying;
+		}
+	}
+	else if(m_eState == Dying)
+	{
+		if(m_nRadius > 0)
+			m_nRadius -= 2;
+		else
 			m_eState = Dead;
 	}
 }
@@ -51,12 +60,6 @@ void Player::Restart()
 	m_fTime = 0.0;
 	m_nRadius = 7;
 }
-
-float Square3(float x)
-{
-	return x*x;
-}
-
 
 void Player::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
 {
@@ -82,15 +85,15 @@ void Player::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD c
 	}
 
 	// Fill element
-	for(int i = cx - Radius;i <= cx;i++)
+	for(int i = (int)cx - (int)Radius;i <= (int)cx;i++)
 	{
-		for(int j = cy - Radius;j <= cy;j++)
+		for(int j = (int)cy - (int)Radius;j <= (int)cy;j++)
 		{
-			float fDistance = sqrt(Square3(cx - i) + Square3(cy - j));
+			float fDistance = sqrt(Square(cx - i) + Square(cy - j));
 			if(fDistance <= Radius + 1)
 			{
-				int tmpi = cx - i;
-				int tmpy = cy - j;
+				int tmpi = (int)cx - i;
+				int tmpy = (int)cy - j;
 
 				m_pGame->GetHGE()->Gfx_RenderLine(cx - tmpi, cy - tmpy, cx - tmpi+1, cy - tmpy + 1, color);
 				m_pGame->GetHGE()->Gfx_RenderLine(cx - tmpi, cy + tmpy, cx - tmpi+1, cy + tmpy + 1, color);

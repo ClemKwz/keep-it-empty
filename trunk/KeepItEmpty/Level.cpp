@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Fonctions.h"
 
 Level::Level(Game* game, int nElement)
 {
@@ -24,18 +25,8 @@ Level::Level(Game* game, int nElement)
 		int nElementPosX = rand()%(nSizeX - 100) + 50;
 		int nElementPosY = rand()%(nSizeY - 100) + 50;
 		
-		// Radius fixe
-		int nRadius = 7;
-		// Radius aléatoire
-		//int nRadius = rand()%(15 - 10) + 10; 
-
-		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY, nRadius, fSpeed);
+		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY,m_pGame->nRadius, m_pGame->fSpeed);
 	}
-}
-
-float Square(float x)
-{
-	return x*x;
 }
 
 void Level::Restart()
@@ -47,8 +38,7 @@ void Level::Restart()
 		delete m_ppElements[i];
 		int nElementPosX = rand()%(nSizeX - 100) + 50;
 		int nElementPosY = rand()%(nSizeY - 100) + 50;
-		int nRadius = 10;
-		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY, nRadius, fSpeed);
+		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY, m_pGame->nRadius, m_pGame->fSpeed);
 	}
 }
 
@@ -59,7 +49,7 @@ void Level::Update()
 		m_ppElements[i]->Update();
 		if(m_ppElements[i]->GetState() == Ready)
 		{
-			if(m_pGame->GetPlayer()->GetState() == Explode)
+			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying)
 			{
 				float x1 = m_ppElements[i]->GetPosX();
 				float y1 = m_ppElements[i]->GetPosY();
@@ -71,13 +61,13 @@ void Level::Update()
 					m_ppElements[i]->SetExploded();
 				}
 			}
-			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dead)
+			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying || m_pGame->GetPlayer()->GetState() == Dead)
 			{
 				float x1 = m_ppElements[i]->GetPosX();
 				float y1 = m_ppElements[i]->GetPosY();
 				for(int j = 0;j < m_nElements;j++)
 				{
-					if(i != j && m_ppElements[j]->GetState() == Explode)
+					if(i != j && (m_ppElements[j]->GetState() == Explode || m_ppElements[j]->GetState() == Dying))
 					{
 						float x2 = m_ppElements[j]->GetPosX();
 						float y2 = m_ppElements[j]->GetPosY();
