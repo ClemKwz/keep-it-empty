@@ -9,6 +9,7 @@
 #include "Conf.h"
 #include "hge.h"
 #include <iostream>
+#include "Fonctions.h"
 
 using namespace std;
 
@@ -93,7 +94,6 @@ void Element::InitUpdateDirection()
 void Element::SetExploded()
 {
 	m_eState = Explode;
-	//m_nRadius = 50;
 }
 
 void Element::Update()
@@ -111,18 +111,22 @@ void Element::Update()
 	{
 		if(m_nRadius < 50)
 			m_nRadius += 2;
-		float dt = m_pGame->GetHGE()->Timer_GetDelta();
-		m_fTime += dt;
+		else
+		{
+			float dt = m_pGame->GetHGE()->Timer_GetDelta();
+			m_fTime += dt;
 
-		// 3 seconds until death
-		if(m_fTime > fDeathTimeElement)
+			if(m_fTime > m_pGame->fDeathTimeElement)
+				m_eState = Dying;
+		}
+	}
+	else if(m_eState == Dying)
+	{
+		if(m_nRadius > 0)
+			m_nRadius -= 2;
+		else
 			m_eState = Dead;
 	}
-}
-
-float Square2(float x)
-{
-	return x*x;
 }
 
 void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
@@ -149,15 +153,15 @@ void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD 
 	}
 
 	// Fill element
-	for(int i = m_fPosX - m_nRadius;i <=  m_fPosX;i++)
+	for(int i = (int)m_fPosX - m_nRadius;i <=  (int)m_fPosX;i++)
 	{
-		for(int j = m_fPosY - m_nRadius;j <=  m_fPosY;j++)
+		for(int j = (int)m_fPosY - m_nRadius;j <=  (int)m_fPosY;j++)
 		{
-			float fDistance = sqrt(Square2(m_fPosX - i) + Square2(m_fPosY - j));
+			float fDistance = sqrt(Square(m_fPosX - i) + Square(m_fPosY - j));
 			if(fDistance <= m_nRadius + 1)
 			{
-				int tmpi = m_fPosX - i;
-				int tmpy = m_fPosY - j;
+				int tmpi = (int)m_fPosX - i;
+				int tmpy = (int)m_fPosY - j;
 
 				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX - tmpi, m_fPosY - tmpy, m_fPosX - tmpi+1, m_fPosY - tmpy + 1, color);
 				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX - tmpi, m_fPosY + tmpy, m_fPosX - tmpi+1, m_fPosY + tmpy + 1, color);

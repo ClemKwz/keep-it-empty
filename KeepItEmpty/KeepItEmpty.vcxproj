@@ -81,6 +81,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Element.cpp" />
+    <ClCompile Include="Fonctions.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -89,6 +90,7 @@
   <ItemGroup>
     <ClInclude Include="Conf.h" />
     <ClInclude Include="Element.h" />
+    <ClInclude Include="Fonctions.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Player.h" />

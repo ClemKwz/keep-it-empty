@@ -15,6 +15,7 @@ public:
 	enum State {
       Ready,
       Explode,
+	  Dying,
       Dead
    };
 

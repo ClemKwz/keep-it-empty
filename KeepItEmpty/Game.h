@@ -18,6 +18,7 @@ class Game
 public:
 	Game(void);
 	HGE* GetHGE(){return m_pHGE;}
+	void InitVars();
 	void Start();
 	int GetScreenSizeX(){return m_nScreenSizeX;}
 	int GetScreenSizeY(){return m_nScreenSizeY;}
@@ -25,6 +26,13 @@ public:
 	void Update();
 	void Draw();
 	~Game(void);
+
+	// Debug
+	float fDeathTimePlayer;
+	float fDeathTimeElement;
+	float fSpeed;
+	int nRadius;
+	int nElements;
 
 private:
 	HGE* m_pHGE;

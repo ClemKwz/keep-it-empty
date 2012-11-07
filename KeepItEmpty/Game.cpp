@@ -7,13 +7,38 @@
 #include "Player.h"
 #include "hge.h"
 #include "hgefont.h"
+#include "Conf.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
 
 HGE* hge = 0;
 Game* pGame = NULL;
 
+void Game::InitVars()
+{
+	fstream file("conf.txt", ios::in);
+	if(file)
+		file >>  fDeathTimePlayer >> fDeathTimeElement >> fSpeed >> nElements >> nRadius; 
+	else
+	{
+		fDeathTimePlayer = 3.0;
+		fDeathTimeElement = 3.0;
+		fSpeed = 5.0;
+		nElements = 30;
+		nRadius = 7;
+	}
+	
+}
+
 Game::Game(void)
 {
 	pGame = this;
+
+	// Debug
+	InitVars();
 
 	m_pPlayer = new Player(pGame);
 
@@ -23,7 +48,7 @@ Game::Game(void)
 
 	m_nCurrentLevel = 0;
 	m_ppLevels = new Level*[10];
-	m_ppLevels[0] = new Level(pGame, 30);
+	m_ppLevels[0] = new Level(pGame, nElements);
 }
 
 Game::~Game(void)
