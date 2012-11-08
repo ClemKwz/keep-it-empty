@@ -124,7 +124,7 @@ void Game::Start()
 
 	if(m_pHGE->System_Initiate())
 	{
-		m_pFont = new hgeFont("font1.fnt");
+		m_pFont = new hgeFont("font.fnt");
 		m_pHGE->System_Start();
 	}
 	else
