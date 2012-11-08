@@ -46,8 +46,7 @@ Game::Game(void)
 	m_nScreenSizeY = 500;
 
 	m_nCurrentLevel = 0;
-	m_ppLevels = new Level*[10];
-	m_ppLevels[0] = new Level(pGame, nElements, 25);
+	m_pLevel = new Level(pGame, nElements, 25);
 }
 
 Game::~Game(void)
@@ -64,12 +63,26 @@ bool FrameFunc()
 
 void Game::Update()
 {
-	m_ppLevels[m_nCurrentLevel]->Update();
+	m_pLevel->Update();
 	m_pPlayer->Update();
-	if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+	if(m_pLevel->GetState() == Won)
 	{
-		m_ppLevels[m_nCurrentLevel]->Restart();
-		m_pPlayer->Restart();
+		if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+		{
+			delete m_pLevel;
+			m_pLevel = new Level(pGame, nElements, 25);
+			m_pPlayer->Restart();
+			m_nCurrentLevel++;
+			fSpeed = (fSpeed/10)*9;
+		}
+	}
+	else if(m_pLevel->GetState() == Lost)
+	{
+		if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+		{
+			m_pLevel->Restart();
+			m_pPlayer->Restart();
+		}
 	}
 }
 
@@ -88,7 +101,7 @@ bool RenderFunc()
 void Game::Draw()
 {
 	m_pPlayer->Draw();
-	m_ppLevels[m_nCurrentLevel]->Draw();
+	m_pLevel->Draw();
 }
 
 void Game::Start()
@@ -96,7 +109,6 @@ void Game::Start()
 	// Initialization
 	hge = hgeCreate(HGE_VERSION);
 	m_pHGE = hge;
-	m_pHGE->System_SetState(HGE_LOGFILE, "keep-it-empty.log");
 	m_pHGE->System_SetState(HGE_SHOWSPLASH, false);
 	m_pHGE->System_SetState(HGE_RENDERFUNC, RenderFunc);   
 	m_pHGE->System_SetState(HGE_FRAMEFUNC, FrameFunc);

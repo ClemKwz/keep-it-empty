@@ -110,7 +110,7 @@ void Player::Draw()
 	{
 		Draw_Circle(m_fReadyPosX, m_fReadyPosY, (float)m_nRadius, 50, m_dwColor);
 	}
-	else if(m_eState == Explode)
+	else if(m_eState == Explode || m_eState == Dying)
 	{
 		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 50, m_dwColor);
 	}
