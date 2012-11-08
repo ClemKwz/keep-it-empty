@@ -20,6 +20,8 @@ Level::Level(Game* game, int nElement, int nGoal)
 	m_nElements = nElement;
 	m_nScore = 0;
 	m_nGoal = nGoal;
+	m_eState = Running;
+	m_fTimeCheckLoose = 0.0;
 	m_ppElements = new Element*[nElement];
 	int nSizeX = m_pGame->GetScreenSizeX();
 	int nSizeY = m_pGame->GetScreenSizeY();
@@ -34,6 +36,7 @@ Level::Level(Game* game, int nElement, int nGoal)
 
 void Level::Restart()
 {
+	m_eState = Running;
 	int nSizeX = m_pGame->GetScreenSizeX();
 	int nSizeY = m_pGame->GetScreenSizeY();
 	for(int i = 0;i < m_nElements;i++)
@@ -90,19 +93,58 @@ void Level::Update()
 			}
 		}
 	}
+	if(m_eState == Running)
+	{
+		if(m_nScore >= m_nGoal)
+			m_eState = Won;
+		else
+		{
+			float dt = m_pGame->GetHGE()->Timer_GetDelta();
+			m_fTimeCheckLoose += dt;
+			if(m_fTimeCheckLoose > 2.0)
+			{
+				m_fTimeCheckLoose = 0.0;
+				int nCptExploded = 0;
+				for(int i = 0;i < m_nElements;i++)
+				{
+					if(m_ppElements[i]->GetState() == Explode)
+						nCptExploded++;
+				}
+				if(nCptExploded == 0 && m_pGame->GetPlayer()->GetState() == Dead)
+					m_eState = Lost;
+			}
+		}
+	}
 }
 
 void Level::Draw()
 {
+	m_pGame->GetFont()->SetColor(0xFF48A1CE);
+	m_pGame->GetFont()->printf(790, 5, HGETEXT_LEFT, "Level %d", m_pGame->GetCurrentLevel()+1);
 	for(int i = 0;i < m_nElements;i++)
 	{
 		m_ppElements[i]->Draw();
 	}
 	DrawGoal();
+	if(m_eState == Won)
+	{
+		m_pGame->GetFont()->SetColor(0xFF00EA17);
+		m_pGame->GetFont()->printf(450, 400, HGETEXT_CENTER, "You won !");
+		m_pGame->GetFont()->SetColor(0xFF48A1CE);
+		m_pGame->GetFont()->printf(450, 450, HGETEXT_CENTER, "Press space bar for next level");
+	}
+	else if(m_eState == Lost)
+	{
+		m_pGame->GetFont()->SetColor(0xFF00EA17);
+		m_pGame->GetFont()->printf(450, 400, HGETEXT_CENTER, "You lost !");
+		m_pGame->GetFont()->SetColor(0xFF48A1CE);
+		m_pGame->GetFont()->printf(450, 450, HGETEXT_CENTER, "Press space bar to restart");
+	}
 }
 
 void Level::DrawGoal()
 {
+	m_pGame->GetFont()->SetColor(0xFF48A1CE);
 	m_pGame->GetFont()->printf(15, 5, HGETEXT_LEFT, "Goal : %d/%d out of %d", m_nScore, m_nGoal, m_nElements);
 }
 

@@ -1,6 +1,6 @@
 [HGEFONT]
 
-Bitmap=font1.png
+Bitmap=font.png
 
 Char=" ",0,0,8,27,0,0
 Char="!",8,0,5,27,0,0

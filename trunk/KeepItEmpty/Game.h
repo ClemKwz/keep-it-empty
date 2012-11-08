@@ -11,6 +11,12 @@
 #include "hge.h"
 #include "hgefont.h"
 
+enum LevelState {
+      Running,
+      Lost,
+	  Won
+   };
+
 class Player;
 
 class Game
@@ -23,6 +29,7 @@ public:
 	void Start();
 	int GetScreenSizeX(){return m_nScreenSizeX;}
 	int GetScreenSizeY(){return m_nScreenSizeY;}
+	int GetCurrentLevel(){return m_nCurrentLevel;}
 	hgeFont* GetFont(){return m_pFont;}
 	Player* GetPlayer(){return m_pPlayer;}
 	void Update();
@@ -45,7 +52,8 @@ private:
 	int m_nScreenSizeX;
 	int m_nScreenSizeY;
 
-	Level** m_ppLevels;
+	//Level** m_ppLevels;
+	Level* m_pLevel;
 	int m_nCurrentLevel;
 
 };
