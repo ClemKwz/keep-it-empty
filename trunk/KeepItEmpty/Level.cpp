@@ -12,11 +12,14 @@
 #include <stdlib.h>
 #include <time.h>
 #include "Fonctions.h"
+#include "hgefont.h"
 
-Level::Level(Game* game, int nElement)
+Level::Level(Game* game, int nElement, int nGoal)
 {
 	m_pGame = game;
 	m_nElements = nElement;
+	m_nScore = 0;
+	m_nGoal = nGoal;
 	m_ppElements = new Element*[nElement];
 	int nSizeX = m_pGame->GetScreenSizeX();
 	int nSizeY = m_pGame->GetScreenSizeY();
@@ -40,6 +43,7 @@ void Level::Restart()
 		int nElementPosY = rand()%(nSizeY - 100) + 50;
 		m_ppElements[i] = new Element(m_pGame, nElementPosX, nElementPosY, m_pGame->nRadius, m_pGame->fSpeed);
 	}
+	m_nScore = 0;
 }
 
 void Level::Update()
@@ -49,6 +53,7 @@ void Level::Update()
 		m_ppElements[i]->Update();
 		if(m_ppElements[i]->GetState() == Ready)
 		{
+			bool bAlreadyExploded = false;
 			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying)
 			{
 				float x1 = m_ppElements[i]->GetPosX();
@@ -59,15 +64,17 @@ void Level::Update()
 				if(fDistance <= m_pGame->GetPlayer()->GetRadius() + m_ppElements[i]->GetRadius())
 				{
 					m_ppElements[i]->SetExploded();
+					m_nScore++;
+					bAlreadyExploded = true;
 				}
 			}
-			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying || m_pGame->GetPlayer()->GetState() == Dead)
+			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying || m_pGame->GetPlayer()->GetState() == Dead && !bAlreadyExploded)
 			{
 				float x1 = m_ppElements[i]->GetPosX();
 				float y1 = m_ppElements[i]->GetPosY();
 				for(int j = 0;j < m_nElements;j++)
 				{
-					if(i != j && (m_ppElements[j]->GetState() == Explode || m_ppElements[j]->GetState() == Dying))
+					if(i != j && (m_ppElements[j]->GetState() == Explode || m_ppElements[j]->GetState() == Dying) && !bAlreadyExploded)
 					{
 						float x2 = m_ppElements[j]->GetPosX();
 						float y2 = m_ppElements[j]->GetPosY();
@@ -75,6 +82,8 @@ void Level::Update()
 						if(fDistance <= m_ppElements[i]->GetRadius() + m_ppElements[j]->GetRadius())
 						{
 							m_ppElements[i]->SetExploded();
+							m_nScore++;
+							bAlreadyExploded = true;
 						}
 					}
 				}
@@ -89,6 +98,12 @@ void Level::Draw()
 	{
 		m_ppElements[i]->Draw();
 	}
+	DrawGoal();
+}
+
+void Level::DrawGoal()
+{
+	m_pGame->GetFont()->printf(15, 5, HGETEXT_LEFT, "Goal : %d/%d out of %d", m_nScore, m_nGoal, m_nElements);
 }
 
 Level::~Level(void)

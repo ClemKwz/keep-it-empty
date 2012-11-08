@@ -9,6 +9,7 @@
 
 #include "Level.h"
 #include "hge.h"
+#include "hgefont.h"
 
 class Player;
 
@@ -22,6 +23,7 @@ public:
 	void Start();
 	int GetScreenSizeX(){return m_nScreenSizeX;}
 	int GetScreenSizeY(){return m_nScreenSizeY;}
+	hgeFont* GetFont(){return m_pFont;}
 	Player* GetPlayer(){return m_pPlayer;}
 	void Update();
 	void Draw();
@@ -36,6 +38,7 @@ public:
 
 private:
 	HGE* m_pHGE;
+	hgeFont* m_pFont;
 
 	Player* m_pPlayer;
 

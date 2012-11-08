@@ -22,16 +22,19 @@ public:
       Dead
    };
 
-	Level(Game* game, int nElements);
+	Level(Game* game, int nElements, int nGoal);
 	void Update();
 	void Restart();
 	void Draw();
+	void DrawGoal();
 	~Level(void);
 
 private:
 	Game* m_pGame;
 	Element** m_ppElements;
 	int m_nElements;
+	int m_nScore;
+	int m_nGoal;
 };
 
 #endif

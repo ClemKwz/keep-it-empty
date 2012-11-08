@@ -6,7 +6,6 @@
 #include "Game.h"
 #include "Player.h"
 #include "hge.h"
-#include "hgefont.h"
 #include "Conf.h"
 #include <iostream>
 #include <fstream>
@@ -48,7 +47,7 @@ Game::Game(void)
 
 	m_nCurrentLevel = 0;
 	m_ppLevels = new Level*[10];
-	m_ppLevels[0] = new Level(pGame, nElements);
+	m_ppLevels[0] = new Level(pGame, nElements, 25);
 }
 
 Game::~Game(void)
@@ -78,7 +77,9 @@ bool RenderFunc()
 {
 	hge->Gfx_BeginScene();
 	hge->Gfx_Clear(0);
+	
 	pGame->Draw();
+	
 	hge->Gfx_EndScene();
 	
 	return false;
@@ -95,29 +96,30 @@ void Game::Start()
 	// Initialization
 	hge = hgeCreate(HGE_VERSION);
 	m_pHGE = hge;
-	hge->System_SetState(HGE_LOGFILE, "keep-it-empty.log");
-	hge->System_SetState(HGE_SHOWSPLASH, false);
-	hge->System_SetState(HGE_RENDERFUNC, RenderFunc);   
-	hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
-	hge->System_SetState(HGE_WINDOWED, true);
-	hge->System_SetState(HGE_USESOUND, true);
-	hge->System_SetState(HGE_SCREENWIDTH, m_nScreenSizeX);
-    hge->System_SetState(HGE_SCREENHEIGHT, m_nScreenSizeY);
-	hge->System_SetState(HGE_TITLE, "Keep It Empty !");
-	hge->System_SetState(HGE_HIDEMOUSE, false);
+	m_pHGE->System_SetState(HGE_LOGFILE, "keep-it-empty.log");
+	m_pHGE->System_SetState(HGE_SHOWSPLASH, false);
+	m_pHGE->System_SetState(HGE_RENDERFUNC, RenderFunc);   
+	m_pHGE->System_SetState(HGE_FRAMEFUNC, FrameFunc);
+	m_pHGE->System_SetState(HGE_WINDOWED, true);
+	m_pHGE->System_SetState(HGE_USESOUND, true);
+	m_pHGE->System_SetState(HGE_SCREENWIDTH, m_nScreenSizeX);
+    m_pHGE->System_SetState(HGE_SCREENHEIGHT, m_nScreenSizeY);
+	m_pHGE->System_SetState(HGE_TITLE, "Keep It Empty !");
+	m_pHGE->System_SetState(HGE_HIDEMOUSE, false);
 
 	// Set FPS
-	hge->System_SetState(HGE_FPS, 30);
+	m_pHGE->System_SetState(HGE_FPS, 30);
 
-	if(hge->System_Initiate())
+	if(m_pHGE->System_Initiate())
 	{
-		hge->System_Start();
+		m_pFont = new hgeFont("font1.fnt");
+		m_pHGE->System_Start();
 	}
 	else
 	{	
-		MessageBox(NULL, (LPCWSTR)hge->System_GetErrorMessage(), L"Error", MB_OK | MB_ICONERROR | MB_APPLMODAL);
+		MessageBox(NULL, (LPCWSTR)m_pHGE->System_GetErrorMessage(), L"Error", MB_OK | MB_ICONERROR | MB_APPLMODAL);
 	}
 
-	hge->System_Shutdown();
-    hge->Release();
+	m_pHGE->System_Shutdown();
+    m_pHGE->Release();
 }
