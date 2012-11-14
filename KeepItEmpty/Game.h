@@ -67,6 +67,8 @@ private:
 	int m_nScreenSizeX;
 	int m_nScreenSizeY;
 
+	bool m_bSwitch;
+
 	float m_fTime;
 	int m_nRadiusMax;
 	int m_iInitTime;

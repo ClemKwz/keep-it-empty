@@ -52,6 +52,7 @@ Game::Game(void)
 	m_dwBackgroundColor = 0;
 	m_iCptColor = 0;
 	m_nRadiusMax = 50;
+	m_bSwitch = true;
 
 	m_nCurrentLevel = 0;
 	m_pLevel = new Level(pGame, nElements, 25);
@@ -83,8 +84,11 @@ void Game::Update()
 			m_pLevel = new Level(pGame, nElements, 25);
 			m_pPlayer->Restart();
 			m_nCurrentLevel++;
-			//fSpeed = (fSpeed/10)*9;
-			m_nRadiusMax -= 2;
+			if(m_bSwitch)
+				fSpeed = (fSpeed/10)*9;
+			else
+				m_nRadiusMax -= 2;
+			m_bSwitch = !m_bSwitch;
 			m_dwBackgroundColor = 0;
 			m_iCptColor = 0;
 		}
