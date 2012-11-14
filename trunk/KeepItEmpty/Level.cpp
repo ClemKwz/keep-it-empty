@@ -80,6 +80,16 @@ void Level::Update()
 							{
 								m_ppElements[i]->SetAlreadyMultiply(true);
 								m_ppElements[cpt] = new Element(m_pGame, m_ppElements[i]->GetPosX(), m_ppElements[i]->GetPosY(),m_pGame->nRadius, m_pGame->fSpeed);
+								for(int cpt2 = cpt+1;cpt2 < cpt+12;cpt2++)
+								{
+									if(cpt2 < m_nElements)
+									{
+										if(m_ppElements[cpt2]->GetState() == Dead)
+										{
+											m_ppElements[cpt2] = new Element(m_pGame, m_ppElements[i]->GetPosX(), m_ppElements[i]->GetPosY(),m_pGame->nRadius, m_pGame->fSpeed);
+										}
+									}
+								}
 								m_ppElements[cpt]->SetAlreadyMultiply(true);
 								cpt = m_nElements;
 							}
