@@ -26,11 +26,12 @@ public:
 	float GetPosX(){return m_fPosX;}
 	float GetPosY(){return m_fPosY;}
 	int GetRadius(){return m_nRadius;}
+	bool GetAlreadyMultiply(){return m_bAlreadyMultiply;}
+	void SetAlreadyMultiply(bool bAlreadyMultiply){m_bAlreadyMultiply = bAlreadyMultiply;}
 	void InitUpdateDirection();
 	void InitType();
 	void SetExploded();
 	void Update();
-	void Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color);
 	void Draw();
 	~Element(void);
 
@@ -48,6 +49,8 @@ private:
 
 	float m_fUpdateX;
 	float m_fUpdateY;
+
+	bool m_bAlreadyMultiply;
 
 	DWORD m_dwColor;
 	int m_nType;

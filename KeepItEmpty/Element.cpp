@@ -22,6 +22,7 @@ Element::Element(Game* pGame, int nPosX, int nPosY, int nRadius, float fSpeed)
 	m_fSpeed = fSpeed;
 	m_eState = Ready;
 	m_fTime = 0.0;
+	m_bAlreadyMultiply = false;
 
 	InitUpdateDirection();
 	InitType();
@@ -129,53 +130,13 @@ void Element::Update()
 	}
 }
 
-void Element::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
-{
-	float EachAngle;
-	float a;
-	float x1;
-	float x2;
-	float y1;
-	float y2;
- 
-	EachAngle = (float)(2.0 * M_PI) / (float)Segments;
- 
-	x2 = Radius;
-	y2 = 0.0;
- 
-	for(a = 0.0;a <= (2.0*M_PI + EachAngle);a += EachAngle)
-	{
-		x1 = x2;
-		y1 = y2;
-		x2 = Radius * cos(a);
-		y2 = Radius * sin(a);
-		m_pGame->GetHGE()->Gfx_RenderLine(x1+cx, y1+cy, x2+cx, y2+cy, color);
-	}
-
-	// Fill element
-	for(int i = (int)m_fPosX - m_nRadius;i <=  (int)m_fPosX;i++)
-	{
-		for(int j = (int)m_fPosY - m_nRadius;j <=  (int)m_fPosY;j++)
-		{
-			float fDistance = sqrt(Square(m_fPosX - i) + Square(m_fPosY - j));
-			if(fDistance <= m_nRadius + 1)
-			{
-				int tmpi = (int)m_fPosX - i;
-				int tmpy = (int)m_fPosY - j;
-
-				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX - tmpi, m_fPosY - tmpy, m_fPosX - tmpi+1, m_fPosY - tmpy + 1, color);
-				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX - tmpi, m_fPosY + tmpy, m_fPosX - tmpi+1, m_fPosY + tmpy + 1, color);
-				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX + tmpi, m_fPosY - tmpy, m_fPosX + tmpi+1, m_fPosY - tmpy + 1, color);
-				m_pGame->GetHGE()->Gfx_RenderLine(m_fPosX + tmpi, m_fPosY + tmpy, m_fPosX + tmpi+1, m_fPosY + tmpy + 1, color);
-			}
-		}
-	}
-}
-
 void Element::Draw()
 {
 	if(m_eState != Dead)
-		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 50, m_dwColor);
+	{
+		m_pGame->GetElementSprite()->SetColor(m_dwColor);
+		m_pGame->GetElementSprite()->RenderStretch(m_fPosX - m_nRadius, m_fPosY - m_nRadius, m_fPosX + m_nRadius, m_fPosY + m_nRadius);
+	}
 }
 
 Element::~Element(void)

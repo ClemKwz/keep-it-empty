@@ -31,6 +31,8 @@ public:
 	Level(Game* game, int nElements, int nGoal);
 	void Update();
 	LevelState GetState(){return m_eState;}
+	bool GetFirstExplosion(){return m_bFirstExplosion;}
+	void SetFirstExplosion(bool bFirstExplosion){m_bFirstExplosion = bFirstExplosion;}
 	void Restart();
 	void Draw();
 	void DrawGoal();
@@ -43,6 +45,8 @@ private:
 	int m_nElements;
 	int m_nScore;
 	int m_nGoal;
+
+	bool m_bFirstExplosion;
 
 	float m_fTimeCheckLoose;
 };
