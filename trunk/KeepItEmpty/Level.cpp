@@ -22,6 +22,7 @@ Level::Level(Game* game, int nElement, int nGoal)
 	m_nGoal = nGoal;
 	m_eState = Running;
 	m_fTimeCheckLoose = 0.0;
+	m_bFirstExplosion = true;
 	m_ppElements = new Element*[nElement];
 	int nSizeX = m_pGame->GetScreenSizeX();
 	int nSizeY = m_pGame->GetScreenSizeY();
