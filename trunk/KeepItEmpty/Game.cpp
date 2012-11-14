@@ -9,6 +9,7 @@
 #include "Conf.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 using namespace std;
@@ -45,6 +46,12 @@ Game::Game(void)
 	m_nScreenSizeX = 900;
 	m_nScreenSizeY = 500;
 
+	m_pPlayer->SetType(1);
+	m_iInitTime = 8;
+	m_fTime = (float)m_iInitTime;
+	m_dwBackgroundColor = 0;
+	m_iCptColor = 0;
+
 	m_nCurrentLevel = 0;
 	m_pLevel = new Level(pGame, nElements, 25);
 }
@@ -69,19 +76,40 @@ void Game::Update()
 	{
 		if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
 		{
+			m_fTime = (float)m_iInitTime;
+			m_pPlayer->SetType(1);
 			delete m_pLevel;
 			m_pLevel = new Level(pGame, nElements, 25);
 			m_pPlayer->Restart();
 			m_nCurrentLevel++;
 			fSpeed = (fSpeed/10)*9;
+			m_dwBackgroundColor = 0;
+			m_iCptColor = 0;
 		}
 	}
 	else if(m_pLevel->GetState() == Lost)
 	{
 		if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
 		{
+			m_fTime = (float)m_iInitTime;
+			m_pPlayer->SetType(1);
 			m_pLevel->Restart();
 			m_pPlayer->Restart();
+			m_dwBackgroundColor = 0;
+			m_iCptColor = 0;
+		}
+	}
+
+	if(m_pPlayer->GetState() >= Explode)
+	{
+		float dt = m_pHGE->Timer_GetDelta();
+		m_fTime -= dt;
+
+		if(m_fTime <= 0)
+		{
+			m_pPlayer = new Player(this);
+			m_pPlayer->SetType(2);
+			m_fTime = (float)m_iInitTime;
 		}
 	}
 }
@@ -89,10 +117,7 @@ void Game::Update()
 bool RenderFunc()
 {
 	hge->Gfx_BeginScene();
-	hge->Gfx_Clear(0);
-	
 	pGame->Draw();
-	
 	hge->Gfx_EndScene();
 	
 	return false;
@@ -100,8 +125,38 @@ bool RenderFunc()
 
 void Game::Draw()
 {
+	if(m_pLevel->GetState() == Won && m_iCptColor < 70)
+	{
+		m_dwBackgroundColor++;
+		m_iCptColor++;
+	}
+	if(m_pLevel->GetState() == Lost && m_iCptColor < 70)
+	{
+		m_dwBackgroundColor += 0x00020000;
+		m_iCptColor++;
+	}
+
+	m_pHGE->Gfx_Clear(m_dwBackgroundColor);
 	m_pPlayer->Draw();
 	m_pLevel->Draw();
+
+	// Draw time counter
+	if(m_pLevel->GetState() == Ready)
+	{
+		int iTmpTime = (int)m_fTime*1000;
+		if(iTmpTime%100 == 0 && m_fTime != m_iInitTime)
+		{	
+			ostringstream os;
+			os << m_fTime;
+			string s = os.str();
+			string s2 = s.substr(0,4);
+			m_pFont->SetColor(0xFF48A1CE);
+			m_pFont->printf(730, 450, HGETEXT_CENTER, "New action in");
+			m_pFont->SetColor(0xFF00EA17);
+			m_pFont->printf(840, 450, HGETEXT_CENTER, s2.c_str());
+		}
+	}
+
 }
 
 void Game::Start()
@@ -124,7 +179,10 @@ void Game::Start()
 
 	if(m_pHGE->System_Initiate())
 	{
-		m_pFont = new hgeFont("font.fnt");
+		m_pFont = new hgeFont("font.fnt"); 
+		HTEXTURE tex = m_pHGE->Texture_Load("particles.png");
+		m_pElementSprite = new hgeSprite(tex, 96, 64, 32, 32);
+		m_pElementSprite->SetHotSpot(16,16);
 		m_pHGE->System_Start();
 	}
 	else

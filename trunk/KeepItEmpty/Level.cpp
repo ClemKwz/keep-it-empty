@@ -57,7 +57,8 @@ void Level::Update()
 		if(m_ppElements[i]->GetState() == Ready)
 		{
 			bool bAlreadyExploded = false;
-			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying)
+			bool bReasonToExplode = m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying;
+			if(bReasonToExplode)
 			{
 				float x1 = m_ppElements[i]->GetPosX();
 				float y1 = m_ppElements[i]->GetPosY();
@@ -66,12 +67,28 @@ void Level::Update()
 				float fDistance = sqrt(Square(x2 - x1) + Square(y2 - y1));
 				if(fDistance <= m_pGame->GetPlayer()->GetRadius() + m_ppElements[i]->GetRadius())
 				{
-					m_ppElements[i]->SetExploded();
-					m_nScore++;
+					if(m_pGame->GetPlayer()->GetTypeClick() == 1)
+					{
+						m_ppElements[i]->SetExploded();
+						m_nScore++;
+					}
+					else
+					{
+						for(int cpt = 0;cpt < m_nElements;cpt++)
+						{
+							if(m_ppElements[cpt]->GetState() == Dead && !m_ppElements[i]->GetAlreadyMultiply())
+							{
+								m_ppElements[i]->SetAlreadyMultiply(true);
+								m_ppElements[cpt] = new Element(m_pGame, m_ppElements[i]->GetPosX(), m_ppElements[i]->GetPosY(),m_pGame->nRadius, m_pGame->fSpeed);
+								m_ppElements[cpt]->SetAlreadyMultiply(true);
+								cpt = m_nElements;
+							}
+						}
+					}
 					bAlreadyExploded = true;
 				}
 			}
-			if(m_pGame->GetPlayer()->GetState() == Explode || m_pGame->GetPlayer()->GetState() == Dying || m_pGame->GetPlayer()->GetState() == Dead && !bAlreadyExploded)
+			if(bReasonToExplode || m_pGame->GetPlayer()->GetState() == Dead || m_pGame->GetPlayer()->GetType() == 2 && !bAlreadyExploded)
 			{
 				float x1 = m_ppElements[i]->GetPosX();
 				float y1 = m_ppElements[i]->GetPosY();
@@ -101,16 +118,16 @@ void Level::Update()
 		{
 			float dt = m_pGame->GetHGE()->Timer_GetDelta();
 			m_fTimeCheckLoose += dt;
-			if(m_fTimeCheckLoose > 2.0)
+			if(m_fTimeCheckLoose > 1)
 			{
 				m_fTimeCheckLoose = 0.0;
 				int nCptExploded = 0;
 				for(int i = 0;i < m_nElements;i++)
 				{
-					if(m_ppElements[i]->GetState() == Explode)
+					if(m_ppElements[i]->GetState() == Explode || m_ppElements[i]->GetState() == Dying)
 						nCptExploded++;
 				}
-				if(nCptExploded == 0 && m_pGame->GetPlayer()->GetState() == Dead)
+				if(nCptExploded == 0 && (m_pGame->GetPlayer()->GetState() == Dead || m_pGame->GetPlayer()->GetType() == 2))
 					m_eState = Lost;
 			}
 		}
@@ -129,16 +146,16 @@ void Level::Draw()
 	if(m_eState == Won)
 	{
 		m_pGame->GetFont()->SetColor(0xFF00EA17);
-		m_pGame->GetFont()->printf(450, 400, HGETEXT_CENTER, "You won !");
+		m_pGame->GetFont()->printf(450, 200, HGETEXT_CENTER, "You won !");
 		m_pGame->GetFont()->SetColor(0xFF48A1CE);
-		m_pGame->GetFont()->printf(450, 450, HGETEXT_CENTER, "Press space bar for next level");
+		m_pGame->GetFont()->printf(450, 250, HGETEXT_CENTER, "Press space bar for next level");
 	}
 	else if(m_eState == Lost)
 	{
 		m_pGame->GetFont()->SetColor(0xFF00EA17);
-		m_pGame->GetFont()->printf(450, 400, HGETEXT_CENTER, "You lost !");
+		m_pGame->GetFont()->printf(450, 200, HGETEXT_CENTER, "You lost !");
 		m_pGame->GetFont()->SetColor(0xFF48A1CE);
-		m_pGame->GetFont()->printf(450, 450, HGETEXT_CENTER, "Press space bar to restart");
+		m_pGame->GetFont()->printf(450, 250, HGETEXT_CENTER, "Press space bar to restart");
 	}
 }
 

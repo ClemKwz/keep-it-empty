@@ -18,6 +18,7 @@ Player::Player(Game* pGame)
 	m_nRadius = 7;
 	m_fTime = 0.0;
 	m_dwColor = 0x7F0D5382;
+	m_iTypeClick = 0;
 }
 
 void Player::Update()
@@ -25,11 +26,23 @@ void Player::Update()
 	if(m_eState == Ready)
 	{
 		m_pGame->GetHGE()->Input_GetMousePos(&m_fReadyPosX, &m_fReadyPosY);
-		if(m_pGame->GetHGE()->Input_GetKeyState(HGEK_LBUTTON))
+
+		if(!m_pGame->GetLevel()->GetFirstExplosion() && m_pGame->GetHGE()->Input_GetKeyState(HGEK_RBUTTON) && m_pGame->GetLevel()->GetState() == Ready)
 		{
 			m_eState = Explode;
 			m_fPosX = m_fReadyPosX;
 			m_fPosY = m_fReadyPosY;
+			m_pGame->GetPlayer()->SetType(2);
+			m_iTypeClick = 2;
+		}
+		if(m_pGame->GetHGE()->Input_GetKeyState(HGEK_LBUTTON) && m_pGame->GetLevel()->GetState() == Ready)
+		{
+			m_eState = Explode;
+			m_fPosX = m_fReadyPosX;
+			m_fPosY = m_fReadyPosY;
+			m_pGame->GetPlayer()->SetType(1);
+			m_iTypeClick = 1;
+			m_pGame->GetLevel()->SetFirstExplosion(false);
 		}
 	}
 	else if(m_eState == Explode)
@@ -61,58 +74,37 @@ void Player::Restart()
 	m_nRadius = 7;
 }
 
-void Player::Draw_Circle(float cx, float cy, float Radius, int Segments, DWORD color)
-{
-	float EachAngle;
-	float a;
-	float x1;
-	float x2;
-	float y1;
-	float y2;
- 
-	EachAngle = (float)(2.0 * M_PI) / (float)Segments;
- 
-	x2 = Radius;
-	y2 = 0.0;
- 
-	for(a = 0.0;a <= (2.0*M_PI + EachAngle);a += EachAngle)
-	{
-		x1 = x2;
-		y1 = y2;
-		x2 = Radius * cos(a);
-		y2 = Radius * sin(a);
-		m_pGame->GetHGE()->Gfx_RenderLine(x1+cx, y1+cy, x2+cx, y2+cy, color);
-	}
-
-	// Fill element
-	for(int i = (int)cx - (int)Radius;i <= (int)cx;i++)
-	{
-		for(int j = (int)cy - (int)Radius;j <= (int)cy;j++)
-		{
-			float fDistance = sqrt(Square(cx - i) + Square(cy - j));
-			if(fDistance <= Radius + 1)
-			{
-				int tmpi = (int)cx - i;
-				int tmpy = (int)cy - j;
-
-				m_pGame->GetHGE()->Gfx_RenderLine(cx - tmpi, cy - tmpy, cx - tmpi+1, cy - tmpy + 1, color);
-				m_pGame->GetHGE()->Gfx_RenderLine(cx - tmpi, cy + tmpy, cx - tmpi+1, cy + tmpy + 1, color);
-				m_pGame->GetHGE()->Gfx_RenderLine(cx + tmpi, cy - tmpy, cx + tmpi+1, cy - tmpy + 1, color);
-				m_pGame->GetHGE()->Gfx_RenderLine(cx + tmpi, cy + tmpy, cx + tmpi+1, cy + tmpy + 1, color);
-			}
-		}
-	}
-}
-
 void Player::Draw()
 {
-	if(m_eState == Ready)
+	if(m_eState == Ready && m_pGame->GetLevel()->GetState() == Ready)
 	{
-		Draw_Circle(m_fReadyPosX, m_fReadyPosY, (float)m_nRadius, 50, m_dwColor);
+		m_pGame->GetElementSprite()->SetColor(m_dwColor);
+		m_pGame->GetElementSprite()->RenderStretch(m_fReadyPosX - m_nRadius, m_fReadyPosY - m_nRadius, m_fReadyPosX + m_nRadius, m_fReadyPosY + m_nRadius);
 	}
 	else if(m_eState == Explode || m_eState == Dying)
 	{
-		Draw_Circle(m_fPosX, m_fPosY, (float)m_nRadius, 50, m_dwColor);
+		m_pGame->GetElementSprite()->SetColor(m_dwColor);
+		m_pGame->GetElementSprite()->RenderStretch(m_fPosX - m_nRadius, m_fPosY - m_nRadius, m_fPosX + m_nRadius, m_fPosY + m_nRadius);
+	}
+	DrawCommand();
+}
+
+void Player::DrawCommand()
+{
+	if(m_eState == Ready && m_pGame->GetLevel()->GetState() == Running)
+	{
+		m_pGame->GetFont()->SetColor(0xFF00EA17);
+		m_pGame->GetFont()->printf(50, 400, HGETEXT_LEFT, "Left click");
+		m_pGame->GetFont()->SetColor(0xFF48A1CE);
+		m_pGame->GetFont()->printf(50, 450, HGETEXT_LEFT, "Explode balls !");
+
+		if(m_iType == 2)
+		{
+			m_pGame->GetFont()->SetColor(0xFF00EA17);
+			m_pGame->GetFont()->printf(850, 400, HGETEXT_RIGHT, "Right click");
+			m_pGame->GetFont()->SetColor(0xFF48A1CE);
+			m_pGame->GetFont()->printf(850, 450, HGETEXT_RIGHT, "Multiply balls !");
+		}
 	}
 }
 
