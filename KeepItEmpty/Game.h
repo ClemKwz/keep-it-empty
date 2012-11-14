@@ -42,6 +42,7 @@ public:
 	hgeFont* GetFont(){return m_pFont;}
 	Player* GetPlayer(){return m_pPlayer;}
 	hgeSprite* GetElementSprite(){return m_pElementSprite;}
+	int GetRadiusMax(){return m_nRadiusMax;}
 	void Update();
 	void Draw();
 	~Game(void);
@@ -67,6 +68,7 @@ private:
 	int m_nScreenSizeY;
 
 	float m_fTime;
+	int m_nRadiusMax;
 	int m_iInitTime;
 
 	//Level** m_ppLevels;

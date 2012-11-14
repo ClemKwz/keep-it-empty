@@ -110,7 +110,7 @@ void Element::Update()
 	}
 	else if(m_eState == Explode)
 	{
-		if(m_nRadius < 50)
+		if(m_nRadius < m_pGame->GetRadiusMax())
 			m_nRadius += 2;
 		else
 		{

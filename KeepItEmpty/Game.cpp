@@ -51,6 +51,7 @@ Game::Game(void)
 	m_fTime = (float)m_iInitTime;
 	m_dwBackgroundColor = 0;
 	m_iCptColor = 0;
+	m_nRadiusMax = 50;
 
 	m_nCurrentLevel = 0;
 	m_pLevel = new Level(pGame, nElements, 25);
@@ -82,7 +83,8 @@ void Game::Update()
 			m_pLevel = new Level(pGame, nElements, 25);
 			m_pPlayer->Restart();
 			m_nCurrentLevel++;
-			fSpeed = (fSpeed/10)*9;
+			//fSpeed = (fSpeed/10)*9;
+			m_nRadiusMax -= 2;
 			m_dwBackgroundColor = 0;
 			m_iCptColor = 0;
 		}
