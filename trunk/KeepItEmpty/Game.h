@@ -43,6 +43,7 @@ public:
 	Player* GetPlayer(){return m_pPlayer;}
 	hgeSprite* GetElementSprite(){return m_pElementSprite;}
 	int GetRadiusMax(){return m_nRadiusMax;}
+	void PlayEffect(int nType);
 	void Update();
 	void Draw();
 	~Game(void);
@@ -58,6 +59,7 @@ private:
 	HGE* m_pHGE;
 	hgeFont* m_pFont;
 	hgeSprite* m_pElementSprite;
+	HEFFECT* m_pSoundEffects;
 
 	DWORD m_dwBackgroundColor;
 	int m_iCptColor; // usefull for degraded background color
