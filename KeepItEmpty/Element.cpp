@@ -95,6 +95,7 @@ void Element::InitUpdateDirection()
 void Element::SetExploded()
 {
 	m_eState = Explode;
+	m_pGame->PlayEffect(m_nType);
 }
 
 void Element::Update()

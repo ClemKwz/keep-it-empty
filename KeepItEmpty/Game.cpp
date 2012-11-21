@@ -53,6 +53,7 @@ Game::Game(void)
 	m_iCptColor = 0;
 	m_nRadiusMax = 50;
 	m_bSwitch = true;
+	m_pSoundEffects = new HEFFECT[8];
 
 	m_nCurrentLevel = 0;
 	m_pLevel = new Level(pGame, nElements, 25);
@@ -118,6 +119,11 @@ void Game::Update()
 			m_fTime = (float)m_iInitTime;
 		}
 	}
+}
+
+void Game::PlayEffect(int nType)
+{
+	m_pHGE->Effect_Play(m_pSoundEffects[nType]);
 }
 
 bool RenderFunc()
@@ -189,6 +195,14 @@ void Game::Start()
 		HTEXTURE tex = m_pHGE->Texture_Load("particles.png");
 		m_pElementSprite = new hgeSprite(tex, 96, 64, 32, 32);
 		m_pElementSprite->SetHotSpot(16,16);
+		m_pSoundEffects[0] = m_pHGE->Effect_Load("s01.ogg");
+		m_pSoundEffects[1] = m_pHGE->Effect_Load("s02.ogg");
+		m_pSoundEffects[2] = m_pHGE->Effect_Load("s03.ogg");
+		m_pSoundEffects[3] = m_pHGE->Effect_Load("s04.ogg");
+		m_pSoundEffects[4] = m_pHGE->Effect_Load("s05.ogg");
+		m_pSoundEffects[5] = m_pHGE->Effect_Load("s06.ogg");
+		m_pSoundEffects[6] = m_pHGE->Effect_Load("s07.ogg");
+		m_pSoundEffects[7] = m_pHGE->Effect_Load("s08.ogg");
 		m_pHGE->System_Start();
 	}
 	else
@@ -196,6 +210,8 @@ void Game::Start()
 		MessageBox(NULL, (LPCWSTR)m_pHGE->System_GetErrorMessage(), L"Error", MB_OK | MB_ICONERROR | MB_APPLMODAL);
 	}
 
+	for(int i = 0; i < 8;i++)
+		m_pHGE->Effect_Free(m_pSoundEffects[i]);
 	m_pHGE->System_Shutdown();
     m_pHGE->Release();
 }
