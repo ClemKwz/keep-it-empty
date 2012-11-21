@@ -191,6 +191,8 @@ void Game::Start()
 
 	if(m_pHGE->System_Initiate())
 	{
+
+		m_pHGE->Resource_AttachPack("res.paq");
 		m_pFont = new hgeFont("font.fnt"); 
 		HTEXTURE tex = m_pHGE->Texture_Load("particles.png");
 		m_pElementSprite = new hgeSprite(tex, 96, 64, 32, 32);
