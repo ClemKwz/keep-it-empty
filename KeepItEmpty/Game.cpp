@@ -10,12 +10,80 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
-
-using namespace std;
+#include "sqlite3.h"
+#include <vector>
+#include <algorithm>
 
 HGE* hge = 0;
 Game* pGame = NULL;
+
+vector<std::pair<string, int>> vScores(0);
+
+bool sortV(pair<string, int> pair1, pair<string, int> pair2)
+{
+	return pair1.second > pair2.second;
+}
+
+static int callbackDB(void *NotUsed, int argc, char **argv, char **azColName)
+{
+	string name = argv[0];
+	int level = atoi(argv[1]);
+	std::pair<string, int> pair = std::make_pair(name, level);
+	vScores.push_back(pair);
+	return 0;
+}
+
+int Game::SaveScore(string name, int level)
+{
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
+
+	rc = sqlite3_open("scores.db", &db);
+	if(rc)
+	{
+		sqlite3_close(db);
+		return(1);
+	}
+	std::ostringstream oss;
+	oss << level;
+	string req = "insert into score values (\"";
+	req += name;
+	req += "\",";
+	req += oss.str();
+	req += ");";
+	rc = sqlite3_exec(db, req.c_str(), callbackDB, 0, &zErrMsg);
+
+	if(rc != SQLITE_OK)
+	{
+		sqlite3_free(zErrMsg);
+	}
+	sqlite3_close(db);
+	return 0;
+}
+
+int Game::LoadScores()
+{
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
+
+	rc = sqlite3_open("scores.db", &db);
+	if(rc)
+	{
+		sqlite3_close(db);
+		return(1);
+	}
+	string req = "select * from score;";
+	rc = sqlite3_exec(db, req.c_str(), callbackDB, 0, &zErrMsg);
+
+	if(rc != SQLITE_OK)
+	{
+		sqlite3_free(zErrMsg);
+	}
+	sqlite3_close(db);
+	return 0;
+}
 
 void Game::InitVars()
 {
@@ -55,6 +123,10 @@ Game::Game(void)
 	m_bSwitch = true;
 	m_pSoundEffects = new HEFFECT[8];
 
+	m_bShowScores = false;
+	m_bEnterName = false;
+	m_bPlayerName = "";
+
 	m_nCurrentLevel = 0;
 	m_pLevel = new Level(pGame, nElements, 25);
 }
@@ -65,8 +137,6 @@ Game::~Game(void)
 
 bool FrameFunc()
 {
-  if(hge->Input_GetKeyState(HGEK_ESCAPE))
-	  return true;
   pGame->Update();
   return false;
 }
@@ -75,35 +145,82 @@ void Game::Update()
 {
 	m_pLevel->Update();
 	m_pPlayer->Update();
-	if(m_pLevel->GetState() == Won)
+
+	if(m_pLevel->GetState() != Running)
 	{
-		if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+		if(!m_bEnterName)
 		{
-			m_fTime = (float)m_iInitTime;
-			m_pPlayer->SetType(1);
-			delete m_pLevel;
-			m_pLevel = new Level(pGame, nElements, 25);
-			m_pPlayer->Restart();
-			m_nCurrentLevel++;
-			if(m_bSwitch)
-				fSpeed = (fSpeed/10)*9;
-			else
-				m_nRadiusMax -= 2;
-			m_bSwitch = !m_bSwitch;
-			m_dwBackgroundColor = 0;
-			m_iCptColor = 0;
+			if(m_pHGE->Input_GetKeyState(HGEK_S) && !m_bShowScores)
+			{
+				m_bShowScores = true;
+				LoadScores();
+			}
+			if(m_pHGE->Input_GetKeyState(HGEK_ESCAPE) && m_bShowScores)
+			{
+				m_bShowScores = false;
+				vScores.clear();
+			}
+		}
+
+		int cEnter = 0;
+		cEnter = m_pHGE->Input_GetChar();
+		if(cEnter == 13 && m_bEnterName) // Enter key
+		{
+			
+			m_bEnterName = false;
+			int rc = SaveScore(m_bPlayerName, m_nCurrentLevel+1);
+			m_pLevel->SetScoreSaved();
+		}	
+		else if(cEnter == 13 && !m_bEnterName && !m_pLevel->GetScoreSaved())
+		{
+			m_bEnterName = true;
+		}
+
+		if(m_bEnterName)
+		{
+			int c = m_pHGE->Input_GetChar();
+			if(c != 0 && m_bPlayerName.size() < 10 && !m_pHGE->Input_GetKeyState(HGEK_ENTER))
+			{
+				if(c != 8)
+				m_bPlayerName += c;
+			}
+			if(c == 8 && m_bPlayerName.size() > 0 && !m_pHGE->Input_GetKeyState(HGEK_ENTER))
+					m_bPlayerName.erase(m_bPlayerName.size()-1, m_bPlayerName.size());
 		}
 	}
-	else if(m_pLevel->GetState() == Lost)
+
+	if(!m_bShowScores)
 	{
-		if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+		if(m_pLevel->GetState() == Won)
 		{
-			m_fTime = (float)m_iInitTime;
-			m_pPlayer->SetType(1);
-			m_pLevel->Restart();
-			m_pPlayer->Restart();
-			m_dwBackgroundColor = 0;
-			m_iCptColor = 0;
+			if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+			{
+				m_fTime = (float)m_iInitTime;
+				m_pPlayer->SetType(1);
+				delete m_pLevel;
+				m_pLevel = new Level(pGame, nElements, 25);
+				m_pPlayer->Restart();
+				m_nCurrentLevel++;
+				if(m_bSwitch)
+					fSpeed = (fSpeed/10)*9;
+				else
+					m_nRadiusMax -= 2;
+				m_bSwitch = !m_bSwitch;
+				m_dwBackgroundColor = 0;
+				m_iCptColor = 0;
+			}
+		}
+		else if(m_pLevel->GetState() == Lost)
+		{
+			if(m_pHGE->Input_GetKeyState(HGEK_SPACE))
+			{
+				m_fTime = (float)m_iInitTime;
+				m_pPlayer->SetType(1);
+				m_pLevel->Restart();
+				m_pPlayer->Restart();
+				m_dwBackgroundColor = 0;
+				m_iCptColor = 0;
+			}
 		}
 	}
 
@@ -167,6 +284,31 @@ void Game::Draw()
 			m_pFont->SetColor(0xFF00EA17);
 			m_pFont->printf(840, 450, HGETEXT_CENTER, s2.c_str());
 		}
+	}
+
+	if(m_bShowScores)
+	{
+		std::sort(vScores.begin(), vScores.end(), sortV); 
+		m_pFont->SetColor(0xFF00EA17);
+		m_pFont->printf(450, 150, HGETEXT_CENTER, "Highest Scores");
+		int y = 200;
+		int size;
+		if(vScores.size() >= 5)
+			size = 5;
+		else
+			size = vScores.size();
+		for(int i = 0;i < size;i++)
+		{
+			m_pFont->SetColor(0xFF48A1CE);
+			string s = vScores[i].first;
+			m_pFont->printf(410, (float)y, HGETEXT_RIGHT, s.c_str());
+			std::ostringstream oss;
+			oss << vScores[i].second;
+			m_pFont->printf(490, (float)y, HGETEXT_LEFT, oss.str().c_str());
+			y += 40;
+		}
+		m_pFont->SetColor(0xFF48A1CE);
+		m_pFont->printf(450, 450, HGETEXT_CENTER, "Press escape to leave");
 	}
 
 }

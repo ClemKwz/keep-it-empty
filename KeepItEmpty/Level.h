@@ -33,6 +33,8 @@ public:
 	LevelState GetState(){return m_eState;}
 	bool GetFirstExplosion(){return m_bFirstExplosion;}
 	void SetFirstExplosion(bool bFirstExplosion){m_bFirstExplosion = bFirstExplosion;}
+	bool GetScoreSaved(){return m_bScoreSaved;}
+	void SetScoreSaved(){m_bScoreSaved = true;};
 	void Restart();
 	void Draw();
 	void DrawGoal();
@@ -47,6 +49,7 @@ private:
 	int m_nGoal;
 
 	bool m_bFirstExplosion;
+	bool m_bScoreSaved;
 
 	float m_fTimeCheckLoose;
 };
