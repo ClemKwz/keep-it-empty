@@ -11,6 +11,9 @@
 #include "hge.h"
 #include "hgefont.h"
 #include <hgesprite.h>
+#include <string>
+
+using namespace std;
 
 enum LevelState {
       Running,
@@ -32,6 +35,11 @@ class Game
 
 public:
 	Game(void);
+	int SaveScore(string name, int level);
+	int LoadScores();
+	bool GetShowScores(){return m_bShowScores;}
+	bool GetEnterName(){return m_bEnterName;}
+	string GetPlayerName(){return m_bPlayerName;}
 	HGE* GetHGE(){return m_pHGE;}
 	void InitVars();
 	void Start();
@@ -75,7 +83,10 @@ private:
 	int m_nRadiusMax;
 	int m_iInitTime;
 
-	//Level** m_ppLevels;
+	bool m_bShowScores;
+	bool m_bEnterName;
+	string m_bPlayerName;
+
 	Level* m_pLevel;
 	int m_nCurrentLevel;
 

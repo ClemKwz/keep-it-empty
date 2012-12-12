@@ -26,6 +26,7 @@ Level::Level(Game* game, int nElement, int nGoal)
 	m_ppElements = new Element*[nElement];
 	int nSizeX = m_pGame->GetScreenSizeX();
 	int nSizeY = m_pGame->GetScreenSizeY();
+	m_bScoreSaved = false;
 	for(int i = 0;i < nElement;i++)
 	{
 		int nElementPosX = rand()%(nSizeX - 100) + 50;
@@ -154,19 +155,44 @@ void Level::Draw()
 		m_ppElements[i]->Draw();
 	}
 	DrawGoal();
-	if(m_eState == Won)
+	if(!m_pGame->GetShowScores())
 	{
-		m_pGame->GetFont()->SetColor(0xFF00EA17);
-		m_pGame->GetFont()->printf(450, 200, HGETEXT_CENTER, "You won !");
-		m_pGame->GetFont()->SetColor(0xFF48A1CE);
-		m_pGame->GetFont()->printf(450, 250, HGETEXT_CENTER, "Press space bar for next level");
-	}
-	else if(m_eState == Lost)
-	{
-		m_pGame->GetFont()->SetColor(0xFF00EA17);
-		m_pGame->GetFont()->printf(450, 200, HGETEXT_CENTER, "You lost !");
-		m_pGame->GetFont()->SetColor(0xFF48A1CE);
-		m_pGame->GetFont()->printf(450, 250, HGETEXT_CENTER, "Press space bar to restart");
+		if(m_eState == Won)
+		{
+			m_pGame->GetFont()->SetColor(0xFF00EA17);
+			m_pGame->GetFont()->printf(450, 200, HGETEXT_CENTER, "You won !");
+			m_pGame->GetFont()->SetColor(0xFF48A1CE);
+			m_pGame->GetFont()->printf(450, 250, HGETEXT_CENTER, "Press space bar for next level");
+		}
+		else if(m_eState == Lost)
+		{
+			m_pGame->GetFont()->SetColor(0xFF00EA17);
+			m_pGame->GetFont()->printf(450, 200, HGETEXT_CENTER, "You lost !");
+			m_pGame->GetFont()->SetColor(0xFF48A1CE);
+			m_pGame->GetFont()->printf(450, 250, HGETEXT_CENTER, "Press space bar to restart");
+		}
+		if(m_eState == Won || m_eState == Lost)
+		{
+			m_pGame->GetFont()->SetColor(0xFF48A1CE);
+			m_pGame->GetFont()->printf(450, 300, HGETEXT_CENTER, "Press s to show scores");
+
+			if(!m_bScoreSaved)
+			{
+				if(!m_pGame->GetEnterName())
+					m_pGame->GetFont()->printf(450, 400, HGETEXT_CENTER, "Press enter to save your score");
+				else
+				{
+					m_pGame->GetFont()->printf(450, 400, HGETEXT_RIGHT, "Enter your name : ");
+					string s = " ";
+					s += m_pGame->GetPlayerName();
+					m_pGame->GetFont()->printf(450, 400, HGETEXT_LEFT, s.c_str());
+				}
+			}
+			else
+			{
+				m_pGame->GetFont()->printf(450, 400, HGETEXT_CENTER, "Score saved !");
+			}
+		}
 	}
 }
 
